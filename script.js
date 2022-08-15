@@ -1,45 +1,66 @@
-let getFactBtn = document.getElementById("get-fact-btn");
-let ranFactBtn = document.getElementById("ran-fact-btn");
-let fact = document.querySelector(".fact");
-let url = "http://numbersapi.com/";
-let fetchFact = (num) => {
-  let finalUrl = url + num;
-  fetch(finalUrl)
-    .then((resp) => resp.text())
-    .then((data) => {
-      fact.style.display = "block";
-      fact.innerHTML = `<h2>${num}</h2>
-      <p>${data}</p>`;
-      document.querySelector(".container").append(fact);
-    });
-};
-let getFact = () => {
-  let num = document.getElementById("num").value;
-  //Check if input number is not empty
-  //If not empty
-  if (num) {
-    //Check if number lies between 0 and 300
-    //if Yes fetch the fact
-    if (num >= 0 && num <= 300) {
-      fetchFact(num);
+availableImages=['bean.jpg','doraemon.jpg','minion.jpg','mouse.jpg','noddy.jpg','popeye.jpg',
+'scooby.jpg','shinchan.jpg','bean.jpg','doraemon.jpg','minion.jpg','mouse.jpg','noddy.jpg',
+'popeye.jpg','scooby.jpg','shinchan.jpg']
+
+function start(){
+    let moves =0;
+    const maindiv = document.getElementById("boardgame");
+    while (maindiv.firstChild) {
+        maindiv.removeChild(maindiv.lastChild);
     }
-    //If number is less than 0 or greater than 300 display error message.
-    else {
-      fact.style.display = "block";
-      fact.innerHTML = `<p class="msg"> Please enter a number between 0 to 300.</p>`;
+    const scorediv = document.getElementById("score");
+    while (scorediv.firstChild) {
+       scorediv.removeChild(scorediv.lastChild);
     }
-  }
-  //If input number is empty display error message
-  else {
-    fact.style.display = "block";
-    fact.innerHTML = `<p class="msg">The input field cannot be empty</p>`;
-  }
-};
-let getRandomFact = () => {
-  //Random number between 0 to 300
-  let num = Math.floor(Math.random() * 301);
-  fetchFact(num);
-};
-getFactBtn.addEventListener("click", getFact);
-ranFactBtn.addEventListener("click", getRandomFact);
-window.addEventListener("load", getRandomFact);
+
+    var row = document.createElement('div')
+    ImagesCopy= JSON.parse(JSON.stringify( availableImages))
+    for(let j=1;j<=16;j++){
+        var div = document.createElement('div');
+        div.setAttribute('class','imgdiv')
+        var image = document.createElement('img')
+        randomImg = ImagesCopy.splice(Math.floor(Math.random() * ImagesCopy.length),1);
+        image.setAttribute('src',randomImg);
+        image.setAttribute('class','hide')
+        div.appendChild(image)
+        row.appendChild(div);
+        
+        if(j%4==0){
+            document.getElementById('boardgame').append(row)
+            row = document.createElement('div')
+        }
+
+        div.addEventListener('click',function(event){
+            moves++;
+            let curr = event.currentTarget.children
+            let currImg = curr[0]
+           var currentlyshowing = document.getElementsByClassName('showimg');
+            currentlyshowing = document.getElementsByClassName('showimg');
+            let flag=0;
+            if(currentlyshowing.length >= 1){
+                for(let i=0;i<currentlyshowing.length;i++)
+                {
+                    if(currentlyshowing[i].src != currImg.src)
+                    currentlyshowing[i].classList.remove('showimg');
+                    else{
+                        currentlyshowing[i].classList.add('match');
+                        currImg.classList.add('match')
+                        flag=1;
+                    }
+                }
+            }
+
+            if(document.getElementsByClassName('match').length==16){
+                alert("You won !!! ")
+                let button = document.createElement('button');
+                button.setAttribute('class' , 'btn btn-warning');
+                let node= document.createTextNode("You won!!! Moves "+moves);
+                button.appendChild(node)
+                document.getElementById('score').appendChild(button) 
+            }
+
+            if(flag==0)
+            currImg.classList.add('showimg');
+        })
+    }
+}
